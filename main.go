@@ -21,10 +21,10 @@ type Person struct {
 	EPBuilt   bool
 }
 
-// URL defines the service provider domain 
+// URL defines the service provider domain
 const URL = "http://webservices.dotnethell.it"
 
-func main(){
+func main() {
 	// Typical usage
 	res, err := DoRequest("silvio", "berlusconi", "milano", "29/09/1936", "M")
 
@@ -38,19 +38,19 @@ func main(){
 // DoRequest is the exit point
 func DoRequest(name string, surname string, birthCity string, birthDate string, gender string) (string, error) {
 	// instance anagraphic data
-	p := NewPerson(name, surname, birthCity, birthDate, gender)
-	
+	p := newPerson(name, surname, birthCity, birthDate, gender)
+
 	// define endpoint
-	p.BuildEndPoint()
+	p.buildEndPoint()
 
 	// do request - http GET
-	XML, err := p.Get()
+	XML, err := p.get()
 
 	if err != nil {
 		return "", err
 	}
 
-	result, err := p.FormatData(XML)
+	result, err := p.formatData(XML)
 	if err != nil {
 		return "", err
 	}
@@ -59,10 +59,10 @@ func DoRequest(name string, surname string, birthCity string, birthDate string, 
 }
 
 // Get retrieve endpoint data
-func (p *Person) Get() (string, error) {
+func (p *Person) get() (string, error) {
 	var retVal = "no-value"
 
-	if !p.EPBuilt{
+	if !p.EPBuilt {
 		err := errors.New("no EndPoint built")
 		return retVal, err
 	}
@@ -83,12 +83,11 @@ func (p *Person) Get() (string, error) {
 		return retVal, err
 	}
 
-
 	return string(body), nil
 }
 
-//FormatData return string from input xml string
-func (p *Person) FormatData(inXML string) (string, error) {
+//formatData return string from input xml string
+func (p *Person) formatData(inXML string) (string, error) {
 	var fc string
 	err := xml.Unmarshal([]byte(inXML), &fc)
 	if err != nil {
@@ -99,8 +98,8 @@ func (p *Person) FormatData(inXML string) (string, error) {
 	return fc, nil
 }
 
-// BuildEndPoint return the full endpoint
-func (p *Person) BuildEndPoint() {
+// buildEndPoint return the full endpoint
+func (p *Person) buildEndPoint() {
 	p.EndPoint = fmt.Sprintf(
 		"%v/codicefiscale.asmx/CalcolaCodiceFiscale?Nome=%v&Cognome=%v&ComuneNascita=%v&DataNascita=%v&Sesso=%v",
 		URL,
@@ -114,8 +113,8 @@ func (p *Person) BuildEndPoint() {
 	p.EPBuilt = true
 }
 
-// NewPerson return Person object
-func NewPerson(name string, surname string, birthCity string, birthDate string, gender string) Person {
+// newPerson return Person object
+func newPerson(name string, surname string, birthCity string, birthDate string, gender string) Person {
 	return Person{
 		Name:      strings.ReplaceAll(name, " ", ""),
 		Surname:   strings.ReplaceAll(surname, " ", ""),
