@@ -23,7 +23,7 @@ type Person struct {
 const URL = "http://webservices.dotnethell.it"
 
 func main() {
-	p := NewPerson("alberto", "de prezzo", "galatina", "06/12/1978", "M")
+	p := NewPerson("silvio", "berlusconi", "milano", "29/09/1936", "M")
 	p.BuildString()
 	XML, err := p.Get()
 
