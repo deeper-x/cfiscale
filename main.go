@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -17,31 +18,55 @@ type Person struct {
 	BirthDate string
 	Gender    string
 	EndPoint  string
+	EPBuilt   bool
 }
 
 // URL defines the service provider domain 
 const URL = "http://webservices.dotnethell.it"
 
-func main() {
-	p := NewPerson("silvio", "berlusconi", "milano", "29/09/1936", "M")
-	p.BuildString()
-	XML, err := p.Get()
+func main(){
+	// Typical usage
+	res, err := DoRequest("silvio", "berlusconi", "milano", "29/09/1936", "M")
 
 	if err != nil {
 		log.Println(err)
+	}
+
+	log.Println(res)
+}
+
+// DoRequest is the exit point
+func DoRequest(name string, surname string, birthCity string, birthDate string, gender string) (string, error) {
+	// instance anagraphic data
+	p := NewPerson(name, surname, birthCity, birthDate, gender)
+	
+	// define endpoint
+	p.BuildEndPoint()
+
+	// do request - http GET
+	XML, err := p.Get()
+
+	if err != nil {
+		return "", err
 	}
 
 	result, err := p.FormatData(XML)
 	if err != nil {
-		log.Println(err)
+		return "", err
 	}
 
-	log.Println("Result:", result)
+	return result, nil
 }
 
 // Get retrieve endpoint data
 func (p *Person) Get() (string, error) {
-	var retVal = ""
+	var retVal = "no-value"
+
+	if !p.EPBuilt{
+		err := errors.New("no EndPoint built")
+		return retVal, err
+	}
+
 	resp, err := http.Get(p.EndPoint)
 
 	if err != nil {
@@ -74,8 +99,8 @@ func (p *Person) FormatData(inXML string) (string, error) {
 	return fc, nil
 }
 
-// BuildString return the full endpoint
-func (p *Person) BuildString() {
+// BuildEndPoint return the full endpoint
+func (p *Person) BuildEndPoint() {
 	p.EndPoint = fmt.Sprintf(
 		"%v/codicefiscale.asmx/CalcolaCodiceFiscale?Nome=%v&Cognome=%v&ComuneNascita=%v&DataNascita=%v&Sesso=%v",
 		URL,
@@ -85,6 +110,8 @@ func (p *Person) BuildString() {
 		p.BirthDate,
 		p.Gender,
 	)
+
+	p.EPBuilt = true
 }
 
 // NewPerson return Person object
