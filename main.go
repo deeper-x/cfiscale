@@ -19,21 +19,8 @@ type Person struct {
 	EndPoint  string
 }
 
-// Response describes xml response
-type Response struct {
-	// Name xml.Name `xml:"string"` 
-	Version []string `xml:"version, attr"`
-	Value string `xml:"string"`
-}
 // URL defines the service provider domain 
 const URL = "http://webservices.dotnethell.it"
-
-// http://webservices.dotnethell.it/codicefiscale.asmx/CalcolaCodiceFiscale?
-// Nome=alberto
-// Cognome=deprezzo
-// ComuneNascita=galatina
-// DataNascita=06/12/1978
-// Sesso=m
 
 func main() {
 	p := NewPerson("alberto", "de prezzo", "galatina", "06/12/1978", "M")
