@@ -27,23 +27,8 @@ type Person struct {
 const URL = "http://webservices.dotnethell.it/codicefiscale.asmx"
 const expected = "Il codice è valido!"
 
-func main() {
-	// Typical usage
-	res, err := DoRequest("silvio", "berlusconi", "milano", "29/09/1936", "M")
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	log.Println(res)
-
-}
-
 // DoRequest is the exit point
-func DoRequest(name string, surname string, birthCity string, birthDate string, gender string) (string, error) {
-	// instance anagraphic data
-	p := newPerson(name, surname, birthCity, birthDate, gender)
-
+func (p *Person) DoRequest() (string, error) {
 	// define endpoint
 	p.buildEPCreate()
 
@@ -75,8 +60,16 @@ func DoRequest(name string, surname string, birthCity string, birthDate string, 
 }
 
 //Verify check for fiscal code validity
-func (p *Person) Verify(fc string) bool {
-	return true
+func (p *Person) Verify(fc string) (bool, error) {
+	p.buildEPVerification(fc)
+
+	ok, err := p.GetV()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return ok, err
 }
 
 // Get retrieve endpoint data
@@ -182,8 +175,8 @@ func (p *Person) buildEPVerification(fc string) {
 	p.EPVBuilt = true
 }
 
-// newPerson return Person object
-func newPerson(name string, surname string, birthCity string, birthDate string, gender string) Person {
+// NewPerson return Person object
+func NewPerson(name string, surname string, birthCity string, birthDate string, gender string) Person {
 	return Person{
 		Name:      strings.ReplaceAll(name, " ", ""),
 		Surname:   strings.ReplaceAll(surname, " ", ""),
