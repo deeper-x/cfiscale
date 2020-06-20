@@ -16,7 +16,7 @@ Metodi esposti:
 #### Genera codice fiscale
 ```
 p := NewPerson("Mario", "Rossi", "Roma", "29/09/1936", "M")
-res, err := p.DoRequest()
+fc, err := p.DoRequest()
 ...
 ```
 
