@@ -22,7 +22,7 @@ res, err := p.DoRequest()
 
 #### Controlla codice fiscale
 ```
-p := NewPerson("Mario", "Rossi", "Roma", "29/09/1936", "M")
+fc := "BRLSLV36P29F205X"
 ok, err := p.Verify(fc)
 ...
 ```
