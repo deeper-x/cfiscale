@@ -25,6 +25,7 @@ type Person struct {
 
 // URL defines the service provider domain
 const URL = "http://webservices.dotnethell.it/codicefiscale.asmx"
+const expected = "Il codice è valido!"
 
 func main() {
 	// Typical usage
@@ -113,6 +114,7 @@ func (p *Person) GetV() (bool, error) {
 		return false, err
 	}
 
+	// call EPV - verification endpoint
 	resp, err := http.Get(p.EPVerification)
 
 	if err != nil {
@@ -128,6 +130,7 @@ func (p *Person) GetV() (bool, error) {
 		return false, err
 	}
 
+	// format result string
 	result, err := p.formatData(string(body))
 
 	if err != nil {
@@ -135,8 +138,7 @@ func (p *Person) GetV() (bool, error) {
 		return false, err
 	}
 
-	expected := "Il codice è valido!"
-
+	// verify result is successful
 	if expected != result {
 		return false, nil
 	}
