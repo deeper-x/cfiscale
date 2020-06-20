@@ -25,7 +25,7 @@ type Person struct {
 
 // URL defines the service provider domain
 const URL = "http://webservices.dotnethell.it/codicefiscale.asmx"
-const expected = "Il codice è valido!"
+const validationExpected = "Il codice è valido!"
 
 // DoRequest is the exit point
 func (p *Person) DoRequest() (string, error) {
@@ -132,7 +132,7 @@ func (p *Person) GetV() (bool, error) {
 	}
 
 	// verify result is successful
-	if expected != result {
+	if validationExpected != result {
 		return false, nil
 	}
 
