@@ -12,17 +12,19 @@ import (
 
 // Person declare data to be passed
 type Person struct {
-	Name      string
-	Surname   string
-	BirthCity string
-	BirthDate string
-	Gender    string
-	EndPoint  string
-	EPBuilt   bool
+	Name           string
+	Surname        string
+	BirthCity      string
+	BirthDate      string
+	Gender         string
+	EPCreate       string // EPC: End Point for fiscal code Creation
+	EPCBuilt       bool   // EPC is built, exists
+	EPVerification string // EPV: End Point for fiscal code Verification
+	EPVBuilt       bool   // EPV is build, exists
 }
 
 // URL defines the service provider domain
-const URL = "http://webservices.dotnethell.it"
+const URL = "http://webservices.dotnethell.it/codicefiscale.asmx"
 
 func main() {
 	// Typical usage
@@ -33,6 +35,7 @@ func main() {
 	}
 
 	log.Println(res)
+
 }
 
 // DoRequest is the exit point
@@ -41,33 +44,50 @@ func DoRequest(name string, surname string, birthCity string, birthDate string, 
 	p := newPerson(name, surname, birthCity, birthDate, gender)
 
 	// define endpoint
-	p.buildEndPoint()
+	p.buildEPCreate()
 
 	// do request - http GET
-	XML, err := p.get()
+	XML, err := p.getC()
 
 	if err != nil {
 		return "", err
 	}
 
+	// build the resulting fiscal code string
 	result, err := p.formatData(XML)
 	if err != nil {
 		return "", err
 	}
 
+	// now prepare for the verification
+	p.buildEPVerification(result)
+
+	// now call for the verification
+	ok, err := p.GetV()
+
+	if !ok {
+		return result, err
+	}
+
+	// fiscal code verified and ready
 	return result, nil
 }
 
+//Verify check for fiscal code validity
+func (p *Person) Verify(fc string) bool {
+	return true
+}
+
 // Get retrieve endpoint data
-func (p *Person) get() (string, error) {
+func (p *Person) getC() (string, error) {
 	var retVal = "no-value"
 
-	if !p.EPBuilt {
+	if !p.EPCBuilt {
 		err := errors.New("no EndPoint built")
 		return retVal, err
 	}
 
-	resp, err := http.Get(p.EndPoint)
+	resp, err := http.Get(p.EPCreate)
 
 	if err != nil {
 		log.Println(err)
@@ -79,11 +99,49 @@ func (p *Person) get() (string, error) {
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 		return retVal, err
 	}
 
 	return string(body), nil
+}
+
+// GetV return if fiscal code is verified
+func (p *Person) GetV() (bool, error) {
+	if !p.EPVBuilt {
+		err := errors.New("End Point Verification doesn't exist")
+		return false, err
+	}
+
+	resp, err := http.Get(p.EPVerification)
+
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	result, err := p.formatData(string(body))
+
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	expected := "Il codice è valido!"
+
+	if expected != result {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 //formatData return string from input xml string
@@ -98,10 +156,10 @@ func (p *Person) formatData(inXML string) (string, error) {
 	return fc, nil
 }
 
-// buildEndPoint return the full endpoint
-func (p *Person) buildEndPoint() {
-	p.EndPoint = fmt.Sprintf(
-		"%v/codicefiscale.asmx/CalcolaCodiceFiscale?Nome=%v&Cognome=%v&ComuneNascita=%v&DataNascita=%v&Sesso=%v",
+// buildEPCreate return the End Point delegated to fiscal code Creation
+func (p *Person) buildEPCreate() {
+	p.EPCreate = fmt.Sprintf(
+		"%v/CalcolaCodiceFiscale?Nome=%v&Cognome=%v&ComuneNascita=%v&DataNascita=%v&Sesso=%v",
 		URL,
 		p.Name,
 		p.Surname,
@@ -110,7 +168,16 @@ func (p *Person) buildEndPoint() {
 		p.Gender,
 	)
 
-	p.EPBuilt = true
+	p.EPCBuilt = true
+}
+
+func (p *Person) buildEPVerification(fc string) {
+	p.EPVerification = fmt.Sprintf(
+		"%v/ControllaCodiceFiscale?CodiceFiscale=%v",
+		URL,
+		fc,
+	)
+	p.EPVBuilt = true
 }
 
 // newPerson return Person object
