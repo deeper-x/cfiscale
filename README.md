@@ -15,16 +15,16 @@ Metodi esposti:
 
 #### Genera codice fiscale
 ```
-	p := NewPerson("Mario", "Rossi", "Roma", "29/09/1936", "M")
-	res, err := p.DoRequest()
-  ...
+p := NewPerson("Mario", "Rossi", "Roma", "29/09/1936", "M")
+res, err := p.DoRequest()
+...
 ```
 
 #### Controlla codice fiscale
 ```
-	p := NewPerson("Mario", "Rossi", "Roma", "29/09/1936", "M")
-  ok, err := p.Verify(fc)
-  ...
+p := NewPerson("Mario", "Rossi", "Roma", "29/09/1936", "M")
+ok, err := p.Verify(fc)
+...
 ```
 
 
