@@ -1,4 +1,4 @@
-package codice-fiscale
+package cfiscale
 
 import (
 	"encoding/xml"
