@@ -178,10 +178,10 @@ func (p *Person) buildEPVerification(fc string) {
 // NewPerson return Person object
 func NewPerson(name string, surname string, birthCity string, birthDate string, gender string) Person {
 	return Person{
-		Name:      strings.ReplaceAll(name, " ", ""),
-		Surname:   strings.ReplaceAll(surname, " ", ""),
-		BirthCity: strings.ReplaceAll(birthCity, " ", ""),
-		BirthDate: strings.ReplaceAll(birthDate, " ", ""),
-		Gender:    strings.ReplaceAll(gender, " ", ""),
+		Name:      strings.Trim(name, " "),
+		Surname:   strings.Trim(surname, " "),
+		BirthCity: strings.Trim(birthCity, " "),
+		BirthDate: strings.Trim(birthDate, " "),
+		Gender:    strings.Trim(gender, " "),
 	}
 }

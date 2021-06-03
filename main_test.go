@@ -20,9 +20,9 @@ func TestCreationCall(t *testing.T) {
 }
 
 func TestVerificationCallOK(t *testing.T) {
-	p := NewPerson("silvio", "berlusconi", "milano", "29/09/1936", "M")
+	p := NewPerson("loredana", "panico", "san pietro vernotico", "12/12/1987", "F")
 
-	fc := "BRLSLV36P29F205W"
+	fc := "PNCLDN87T52I119C"
 	ok, err := p.Verify(fc)
 
 	if !ok {
@@ -35,7 +35,7 @@ func TestVerificationCallOK(t *testing.T) {
 }
 
 func TestVerificationCallFail(t *testing.T) {
-	p := NewPerson("silvio", "berlusconi", "milano", "29/09/1936", "M")
+	p := NewPerson("loredana", "panico", "san pietro vernotico", "12/12/1978", "M")
 
 	// forced to be invalid
 	fc := "BRLSLV36P29F205X"
