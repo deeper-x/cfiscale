@@ -81,6 +81,7 @@ func (p *Person) getC() (string, error) {
 		return retVal, err
 	}
 
+	log.Println(p.EPCreate)
 	resp, err := http.Get(p.EPCreate)
 
 	if err != nil {
@@ -97,6 +98,7 @@ func (p *Person) getC() (string, error) {
 		return retVal, err
 	}
 
+	log.Println(string(body))
 	return string(body), nil
 }
 
