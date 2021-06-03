@@ -5,17 +5,17 @@ import (
 )
 
 func TestCreationCall(t *testing.T) {
-	p := NewPerson("silvio", "berlusconi", "milano", "29/09/1936", "M")
+	p := NewPerson("loredana", "panico", "san pietro vernotico", "12/12/1987", "F")
 	res, err := p.DoRequest()
 
 	if err != nil {
 		t.Error("http call not completed")
 	}
 
-	expected := "BRLSLV36P29F205W"
+	expected := "PNCLDN87T52I119C"
 
 	if res != expected {
-		t.Error("expected code different from real")
+		t.Error("expected code different from real", res, expected)
 	}
 }
 

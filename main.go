@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
+	"net/url"
 )
 
 // Person declare data to be passed
@@ -178,10 +178,10 @@ func (p *Person) buildEPVerification(fc string) {
 // NewPerson return Person object
 func NewPerson(name string, surname string, birthCity string, birthDate string, gender string) Person {
 	return Person{
-		Name:      strings.Trim(name, " "),
-		Surname:   strings.Trim(surname, " "),
-		BirthCity: strings.Trim(birthCity, " "),
-		BirthDate: strings.Trim(birthDate, " "),
-		Gender:    strings.Trim(gender, " "),
+		Name:      url.QueryEscape(name),
+		Surname:   url.QueryEscape(surname),
+		BirthCity: url.QueryEscape(birthCity),
+		BirthDate: url.QueryEscape(birthDate),
+		Gender:    url.QueryEscape(gender),
 	}
 }
