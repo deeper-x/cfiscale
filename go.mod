@@ -1,3 +1,3 @@
-module github.com/zreq3b/cfiscale
+module github.com/deeper-x/cfiscale
 
 go 1.16
